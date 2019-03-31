@@ -15,9 +15,9 @@ var gulp = require('gulp'), // Подключаем Gulp
 	/* task для сбора sass файлов в css */
 	gulp.task('sass', function(){ // Создаем таск "sass"
 	    return gulp.src('src/sass/**/*.sass') // Берем все sass файлы из папки sass и дочерних, если таковые будут
-	        .pipe(sass()) // Преобразуем Sass в CSS посредством gulp-sass
+	        .pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError)) // Преобразуем Sass в CSS посредством gulp-sass; expanded - развернутый стиль вывода в результирующий файл
         	.pipe(autoprefixer(['last 15 versions', '> 1%', 'ie 8', 'ie 7'], { cascade: true })) // Создаем префиксы	        
-	        .pipe(gulp.dest('src/css')) // Выгружаем результата в папку build/css
+	        .pipe(gulp.dest('src/css')) // Выгружаем результата в папку src/css
 	        .pipe(browserSync.reload({stream: true})) // Обновляем CSS на странице при изменении
 	});
 	/* включаем sync */
@@ -49,7 +49,7 @@ var gulp = require('gulp'), // Подключаем Gulp
 	});
 	/* минификации CSS */
 	gulp.task('css-libs', function() {
-	    return gulp.src('src/css/libs.css') // Выбираем файл для минификации
+	    return gulp.src('src/sass/libs.sass') // Выбираем файл для минификации
 	        .pipe(cssnano()) // Сжимаем
 	        .pipe(rename({suffix: '.min'})) // Добавляем суффикс .min
 	        .pipe(gulp.dest('src/css')); // Выгружаем в папку src/css
