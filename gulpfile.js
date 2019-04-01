@@ -14,10 +14,15 @@ var gulp = require('gulp'), // Подключаем Gulp
 /* тут начинаются таски */
 	/* task для сбора sass файлов в css */
 	gulp.task('sass', function(){ // Создаем таск "sass"
-	    return gulp.src('src/sass/**/*.sass') // Берем все sass файлы из папки sass и дочерних, если таковые будут
-	        .pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError)) // Преобразуем Sass в CSS посредством gulp-sass; expanded - развернутый стиль вывода в результирующий файл
+	    return gulp.src([
+	    	'src/sass/**/*.sass'
+	    	//'node_modules/normalize-scss/sass/normalize/_normalize.scss'
+	    	]) // Берем все sass файлы из папки sass и дочерних, если таковые будут
+	        .pipe(sass({
+	        	includePaths: require('node-normalize-scss').includePaths
+	        })) // Преобразуем Sass в CSS посредством gulp-sass
         	.pipe(autoprefixer(['last 15 versions', '> 1%', 'ie 8', 'ie 7'], { cascade: true })) // Создаем префиксы	        
-	        .pipe(gulp.dest('src/css')) // Выгружаем результата в папку src/css
+	        .pipe(gulp.dest('src/css')) // Выгружаем результата в папку build/css
 	        .pipe(browserSync.reload({stream: true})) // Обновляем CSS на странице при изменении
 	});
 	/* включаем sync */
@@ -41,15 +46,19 @@ var gulp = require('gulp'), // Подключаем Gulp
 	/* сборка и сжатие библиотек и js */
 	gulp.task('all-scripts', function() {
 	    return gulp.src([ // Берем все необходимые библиотеки из libs
-	        'src/libs/jquery/dist/jquery.js', // Берем jQuery
+	        'src/libs/jquery/dist/jquery.js' // Берем jQuery
 	        ])
 	        .pipe(concat('libs.min.js')) // Собираем их в кучу в новом файле libs.min.js
 	        .pipe(uglify()) // Сжимаем JS файл
 	        .pipe(gulp.dest('src/js')); // Выгружаем в папку src/js
 	});
-	/* минификации CSS */
+	/* минификации CSS библиотек */
 	gulp.task('css-libs', function() {
-	    return gulp.src('src/sass/libs.sass') // Выбираем файл для минификации
+	    return gulp.src([
+	    	//'src/libs/normalize.css',
+	    	'src/css/libs.css' // Выбираем файл для минификации
+	    	]) 
+	    	//.pipe(concat('libs.css'))
 	        .pipe(cssnano()) // Сжимаем
 	        .pipe(rename({suffix: '.min'})) // Добавляем суффикс .min
 	        .pipe(gulp.dest('src/css')); // Выгружаем в папку src/css
